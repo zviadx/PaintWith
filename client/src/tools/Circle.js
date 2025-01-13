@@ -25,8 +25,8 @@ export default class Circle extends Tool{
 
     onMouseMoveHandler(e){
         if (this.mouseDown){
-            // let radiusX = e.pageX - e.target.offsetLeft - this.savedX
-            // let radiusY = e.pageY - e.target.offsetTop - this.savedY
+            let radiusX = e.pageX - e.target.offsetLeft - this.savedX
+            let radiusY = e.pageY - e.target.offsetTop - this.savedY
             // this.draw(this.savedX, this.savedY, radiusX, radiusY)
 
             this.socket.send(JSON.stringify({

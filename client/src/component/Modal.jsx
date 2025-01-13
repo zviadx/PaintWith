@@ -11,12 +11,11 @@ const ModalWindow = ({show, setShow}) => {
     const [inputType, setInputType] = useState("password")
 
     const handleClose = () => setShow(false);
-    // const handleShow = () => setShow(true);
 
     const addUserName = (event) => {
         if(event.key === "Enter"){
-            console.log("ქსელში ჩაერთო მომხმარებელი:", inpReference.current.value)
             canvasState.setClientName(inpReference.current.value)
+            console.log("ქსელში ჩაერთო მომხმარებელი:", inpReference.current.value)
             inpReference.current.value = ''
         }
     }

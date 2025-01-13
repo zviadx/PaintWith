@@ -21,14 +21,22 @@ const Canvas = observer(() => {
 
 
         useEffect(() => {
-            canvasState.setCanvasState(canvReference.current)
-            canvasState.setCtx(canvReference.current.getContext('2d'))
-            canvasState.setImage(canvReference.current.toDataURL())
+            if (canvReference.current) {
+                console.log(canvReference.current)
+                canvasState.setCanvasState(canvReference.current)
+                canvasState.setCtx(canvReference.current.getContext('2d'))
+                canvasState.setImage(canvReference.current.toDataURL())
+                console.log(canvReference.current.toDataURL())
+            } else {
+                console.log("No CANVAS")
+            }
         }, [])
 
         useEffect(() => {
             if (canvasState.clientName) {
+                console.log(`იუსერის სახელი -- ${canvasState.clientName}`)
                 const socket = new WebSocket('ws://localhost:5050/')
+                console.log("სოკეტი -- ", socket)
                 socket.onopen = () => {
                     console.log("Socket is OPEN")
                         socket.send(JSON.stringify({
@@ -37,6 +45,7 @@ const Canvas = observer(() => {
                           clientName: canvasState.clientName
                         }))
                     canvasState.setSocket(socket)
+                    console.log(`სოკეტი -- ${canvasState.socket}`)
                     canvasState.setSessionId(params.id)
                 }
 
@@ -53,6 +62,8 @@ const Canvas = observer(() => {
                     }
 
                 })
+            } else {
+                console.log("იუსერის სახელი არ ფიქსირდება")
             }
         }, [canvasState.clientName, params.id])
 
