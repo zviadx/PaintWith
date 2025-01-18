@@ -63,6 +63,7 @@ export default class Rect extends Tool {
         let img = new Image()
         img.src = image
         img.onload = () => {
+            console.log(`onLoad ამუშავდა`)
             ctx.clearRect(0,0 , canvas.width, canvas.height)
             ctx.drawImage(img, 0, 0 , canvas.width, canvas.height)
             ctx.beginPath()

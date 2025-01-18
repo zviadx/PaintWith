@@ -1,16 +1,13 @@
-import React, {useState} from 'react';
-import {useRef, useEffect} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import '../style/canvas.scss'
 import {observer} from "mobx-react-lite";
 import canvasState from "../store/canvasState";
-// import toolState from "../store/toolState";
 import {useParams} from 'react-router-dom'
 import Brush from "../tools/Brush";
 import Circle from "../tools/Circle";
 import Rect from "../tools/Rect";
-// import Button from 'react-bootstrap/Button';
 import ModalWindow from "./Modal"
-
+import {CANVAS_CONFIG, WS_ENDPOINT} from "../config/constants.js";
 
 
 const Canvas = observer(() => {
@@ -26,17 +23,21 @@ const Canvas = observer(() => {
                 canvasState.setCanvasState(canvReference.current)
                 canvasState.setCtx(canvReference.current.getContext('2d'))
                 canvasState.setImage(canvReference.current.toDataURL())
-                console.log(canvReference.current.toDataURL())
             } else {
                 console.log("No CANVAS")
             }
         }, [])
 
         useEffect(() => {
+            let socket
             if (canvasState.clientName) {
                 console.log(`იუსერის სახელი -- ${canvasState.clientName}`)
-                const socket = new WebSocket('ws://localhost:5050/')
+                socket = new WebSocket(WS_ENDPOINT)
                 console.log("სოკეტი -- ", socket)
+
+                socket.onerror = (error) => {
+                    console.error("WebSocket Error:", error)
+                }
                 socket.onopen = () => {
                     console.log("Socket is OPEN")
                         socket.send(JSON.stringify({
@@ -48,7 +49,6 @@ const Canvas = observer(() => {
                     console.log(`სოკეტი -- ${canvasState.socket}`)
                     canvasState.setSessionId(params.id)
                 }
-
                 socket.onmessage = ((event) => {
                     let msg = JSON.parse(event.data)
                     switch (msg.method) {
@@ -60,10 +60,15 @@ const Canvas = observer(() => {
                             drawHandler(msg)
                             break
                     }
-
                 })
             } else {
                 console.log("იუსერის სახელი არ ფიქსირდება")
+            }
+
+            return () => {
+                if (socket) {
+                    socket.close()
+                }
             }
         }, [canvasState.clientName, params.id])
 
@@ -89,10 +94,9 @@ const Canvas = observer(() => {
 
         }
 
-
-        const mouseDownHandler = () => {
-        canvasState.pushToUndo(canvReference.current.toDataURL())
-    }
+        const mouseDownHandler = useCallback(() => {
+            canvasState.pushToUndo(canvReference.current.toDataURL())
+        },[canvReference])
 
 
     return (
@@ -100,7 +104,10 @@ const Canvas = observer(() => {
             <div className='canvas'>
 
     <canvas
-        ref={canvReference} width='600px' height='400px'
+        ref={canvReference}
+        width={CANVAS_CONFIG.width}
+        height={CANVAS_CONFIG.height}
+
         onMouseDown={() => mouseDownHandler()}
     />
 
@@ -116,4 +123,6 @@ const Canvas = observer(() => {
     );
 }
 )
+
 export default Canvas;
+

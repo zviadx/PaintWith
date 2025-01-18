@@ -9,6 +9,7 @@ import Eraser from "../tools/Eraser";
 
 
 const Toolbar = () => {
+
     return (
         <div className='toolbar'>
             <button
@@ -23,6 +24,7 @@ const Toolbar = () => {
         toolState.setToolState(new Rect(canvasState.canvas, canvasState.socket, canvasState.sessionId))
     }}
     />
+
             <button
     className='toolbar__btn circle'
     onClick={() => {

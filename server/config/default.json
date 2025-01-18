@@ -1,0 +1,4 @@
+{
+  "ServerPort": 5050,
+  "dbUrl": "mongodb+srv://zviadx:Samdurak00@cluster1.cb0s2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1"
+}

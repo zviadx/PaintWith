@@ -1,10 +1,14 @@
 
 const express = require('express')
+
+const mongoose = require('mongoose')
+const config = require('config')
+
 const app = express()
 const WSServer = require('express-ws')(app)
 const aWss = WSServer.getWss()
-
-const PORT = process.env.PORT || 5050
+const PORT = process.env.PORT || config.get('ServerPort')
+// const User = require('./models/User')
 
 
 app.ws('/', (ws) => {
@@ -16,21 +20,13 @@ app.ws('/', (ws) => {
 
         msg = JSON.parse(msg)
         connectionHandler(ws, msg)
-        // switch (msg.method) {
-        //     case "connection":
-        //         connectionHandler(ws, msg)
-        //         break
-        //     case "draw":
-        //         connectionHandler(ws, msg)
-        //         break
-        // }
     })
 })
 
 
 const connectionHandler = (ws, msg) => {
     ws.id = msg.id
-    // console.log("out")
+    console.log(`id --  ${ws.id}`)
 
     switch (msg.method) {
         case 'connection':
@@ -61,11 +57,25 @@ const broadcastConnectionDraw = (ws, msg) => {
     aWss.clients.forEach(client => {
         if(client.id === msg.id){
             console.log(`USER id: ${client.id} figure name: ${client.figure} is in DRAW mode ` )
+            // console.log(`Message is ... ${JSON.stringify(msg)}`)
             client.send(JSON.stringify(msg))
         }
     })
 }
 
+const start = async () => {
+    try {
+        await mongoose.connect(config.get("dbUrl").toString(),
+            // {
+            // useNewUrlParser: true,
+            // useUnifiedTopology: true
+        // }
+        )
+    } catch (e) {
 
-app.listen(PORT, () => console.log(`server started on PORT ${PORT}`))
+    }
 
+    app.listen(PORT, () => console.log(`server started on PORT ${PORT}`))
+}
+
+start()
